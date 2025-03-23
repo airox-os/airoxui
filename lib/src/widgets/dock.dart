@@ -26,28 +26,31 @@ class Dock extends StatelessWidget {
 
   Widget _buildMobileDock(BuildContext context) {
     return Container(
-      height: 75,
+      height: 72,
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ), // Adjust margins to fix overflow
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.indigo.withOpacity(0.8),
-            Colors.deepPurple.withOpacity(0.8),
+            Colors.blue.withOpacity(0.6),
+            Colors.indigo.withOpacity(0.6),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
+        borderRadius: BorderRadius.circular(
+          20,
+        ), // Full rounded corners all around
         boxShadow: [
           BoxShadow(
-            color: Colors.indigo.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, -3),
+            color: Colors.blue.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
+
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
