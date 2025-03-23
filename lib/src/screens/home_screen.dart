@@ -20,20 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Airox OS',
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.pushNamed(context, '/settings'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () => Navigator.pushNamed(context, '/profile'),
-          ),
-        ],
-      ),
+      // Removed the appBar property
       body: Stack(
         children: [
           // Background image
