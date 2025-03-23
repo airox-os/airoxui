@@ -4,7 +4,7 @@ import '../widgets/adaptive_layout.dart';
 import '../widgets/dock.dart';
 import '../widgets/system_status_bar.dart';
 import '../widgets/lock_screen.dart';
-import '../widgets/bottom_nav_bar.dart';
+import '../widgets/navigation_handle.dart'; // Import the navigation handle
 import '../layouts/mobile_home_layout.dart';
 import '../layouts/desktop_home_layout.dart';
 
@@ -62,11 +62,13 @@ class _HomeScreenState extends State<HomeScreen>
               fit: BoxFit.cover,
             ),
           ),
-          // Home screen content in a Column for proper stacking
+
+          // Home screen content
           Column(
             children: [
               // Show SystemStatusBar on both mobile and desktop
               const SystemStatusBar(),
+
               // Main content area
               Expanded(
                 child: AdaptiveLayout(
@@ -74,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen>
                   desktop: DesktopHomeLayout(selectedIndex: _selectedIndex),
                 ),
               ),
+
               // Desktop dock at the bottom (only for desktop)
               if (!isMobile)
                 Padding(
@@ -83,47 +86,47 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Dock(items: _dockItems, isMobile: false),
                   ),
                 ),
-              // Bottom spacer to make room for the dock and nav bar
-              if (isMobile)
-                SizedBox(height: 160), // Space for dock + nav bar + padding
             ],
           ),
-          // Mobile dock positioned at the bottom with fixed positioning
+
+          // Mobile dock at the bottom (only for mobile)
           if (isMobile && !_isLocked)
             Positioned(
               left: 0,
               right: 0,
-              bottom: 76, // Position above the bottom nav bar
+              bottom: 20, // Position above the navigation handle
               child: Dock(
                 items: _dockItems,
                 isMobile: true,
                 selectedIndex: _selectedIndex,
                 onItemSelected: (index) {
-                  // Handle dock item selection
                   setState(() {
                     if (index == 2) {
-                      // Apps icon
                       _selectedIndex = 1;
                     }
                   });
                 },
               ),
             ),
-          // Bottom navigation bar - completely separate from the dock
+
+          // Navigation handle (only for mobile)
           if (isMobile && !_isLocked)
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: BottomNavBar(
-                selectedIndex: _selectedIndex,
-                onItemSelected: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
+              child: Center(
+                child: NavigationHandle(
+                  width: 120,
+                  color: Colors.white,
+                  onTap: () {
+                    // Handle the navigation gesture
+                    // This could show a bottom sheet or trigger system back
+                  },
+                ),
               ),
             ),
+
           // Lock screen overlay
           if (_isLocked)
             Positioned.fill(
