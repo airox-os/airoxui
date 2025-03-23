@@ -230,7 +230,7 @@ class _MobileHomeLayout extends StatelessWidget {
           onTap:
               () => Navigator.pushNamed(
                 context,
-                '/${app['name']?.toLowerCase()}',
+                '/${(app['name'] as String).toLowerCase()}',
               ),
         );
       },
