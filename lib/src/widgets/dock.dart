@@ -29,7 +29,8 @@ class Dock extends StatelessWidget {
       height: 72,
       margin: const EdgeInsets.symmetric(
         horizontal: 16,
-      ), // Adjust margins to fix overflow
+        vertical: 2, // Add small vertical margin to fix the 2.0px overflow
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -50,40 +51,43 @@ class Dock extends StatelessWidget {
           ),
         ],
       ),
-
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          // Background light effects
-          Positioned(
-            top: 10,
-            child: Container(
-              width: 100,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.5),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                ],
+      child: ClipRRect(
+        // Add ClipRRect to prevent overflow rendering
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            // Background light effects
+            Positioned(
+              top: 10,
+              child: Container(
+                width: 100,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.5),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // The main dock items
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(
-              items.length,
-              (index) => _buildFloatingDockItem(context, items[index], index),
+            // The main dock items
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(
+                items.length,
+                (index) => _buildFloatingDockItem(context, items[index], index),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -94,11 +98,26 @@ class Dock extends StatelessWidget {
     int index,
   ) {
     final isSelected = index == selectedIndex;
+
+    // Calculate available height for content
+    const double containerHeight = 72.0; // Total height of mobile dock
+    const double itemHeight = 50.0; // Height of icon container
+    const double spacing = 4.0; // Spacing between icon and label
+    const double labelHeight = 14.0; // Approximate height of label with padding
+
+    // Calculate maximum available vertical translation that won't cause overflow
+    const double maxTranslation =
+        (containerHeight - itemHeight - spacing - labelHeight) / 2;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       transform:
           isSelected
-              ? Matrix4.translationValues(0, -12, 0)
+              ? Matrix4.translationValues(
+                0,
+                -maxTranslation,
+                0,
+              ) // Use calculated safe translation
               : Matrix4.translationValues(0, 0, 0),
       child: InkWell(
         onTap: () {
@@ -108,6 +127,7 @@ class Dock extends StatelessWidget {
         customBorder: const CircleBorder(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: 50,
@@ -142,25 +162,31 @@ class Dock extends StatelessWidget {
                 size: 26,
               ),
             ),
-            const SizedBox(height: 4),
-            Visibility(
-              visible: isSelected,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  item.label,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+            SizedBox(height: spacing),
+            if (isSelected)
+              SizedBox(
+                height: labelHeight, // Fixed height container for label
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    item.label,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-            ),
+              )
+            else
+              SizedBox(height: labelHeight), // Placeholder with same height
           ],
         ),
       ),
