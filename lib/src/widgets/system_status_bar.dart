@@ -3,7 +3,9 @@ import 'dart:async';
 
 /// A widget displaying system status information (time, battery, etc)
 class SystemStatusBar extends StatefulWidget {
-  const SystemStatusBar({super.key});
+  final bool isDesktop;
+
+  const SystemStatusBar({super.key, this.isDesktop = true});
 
   @override
   State<SystemStatusBar> createState() => _SystemStatusBarState();
@@ -12,14 +14,15 @@ class SystemStatusBar extends StatefulWidget {
 class _SystemStatusBarState extends State<SystemStatusBar> {
   late Timer _timer;
   late String _timeString;
+  late String _dateString;
 
   @override
   void initState() {
     super.initState();
-    _timeString = _formatDateTime(DateTime.now());
+    _updateTime();
     _timer = Timer.periodic(
       const Duration(seconds: 1),
-      (Timer t) => _getTime(),
+      (Timer t) => _updateTime(),
     );
   }
 
@@ -29,16 +32,40 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
     super.dispose();
   }
 
-  void _getTime() {
+  void _updateTime() {
     final DateTime now = DateTime.now();
-    final String formattedDateTime = _formatDateTime(now);
     setState(() {
-      _timeString = formattedDateTime;
+      _timeString = _formatTime(now);
+      _dateString = _formatDate(now);
     });
   }
 
-  String _formatDateTime(DateTime dateTime) {
+  String _formatTime(DateTime dateTime) {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDate(DateTime dateTime) {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    // Adjust day of week (0 is Monday in days array, but DateTime.weekday has 1 as Monday)
+    final dayName = days[(dateTime.weekday - 1) % 7];
+    final monthName = months[dateTime.month - 1];
+
+    return '$dayName, $monthName ${dateTime.day}';
   }
 
   @override
@@ -61,6 +88,10 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
               Text('Airox OS', style: Theme.of(context).textTheme.labelMedium),
             ],
           ),
+
+          // Middle - Date (only for desktop)
+          if (widget.isDesktop)
+            Text(_dateString, style: Theme.of(context).textTheme.labelMedium),
 
           // Right side - System indicators
           Row(
