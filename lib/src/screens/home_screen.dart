@@ -119,16 +119,19 @@ class _HomeScreenState extends State<HomeScreen>
     DockItem(
       icon: Icons.photo,
       label: 'Photos',
+      backgroundColor: Colors.teal, // Add unique background color
       onTap: () => Navigator.pushNamed(context, '/photos'),
     ),
     DockItem(
       icon: Icons.terminal,
       label: 'Terminal',
+      backgroundColor: Colors.deepPurple, // Add unique background color
       onTap: () => Navigator.pushNamed(context, '/terminal'),
     ),
     DockItem(
       icon: Icons.apps,
       label: 'Apps',
+      backgroundColor: Colors.blue, // Add unique background color
       onTap: () {
         setState(() {
           _selectedIndex = 1;
@@ -138,11 +141,13 @@ class _HomeScreenState extends State<HomeScreen>
     DockItem(
       icon: Icons.calculate,
       label: 'Calculator',
+      backgroundColor: Colors.orange, // Add unique background color
       onTap: () => Navigator.pushNamed(context, '/calculator'),
     ),
     DockItem(
       icon: Icons.settings,
       label: 'Settings',
+      backgroundColor: Colors.green, // Add unique background color
       onTap: () => Navigator.pushNamed(context, '/settings'),
     ),
   ];
