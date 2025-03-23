@@ -74,113 +74,191 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            Colors.deepPurple.withOpacity(0.4),
+            Colors.cyan.withOpacity(0.4),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(isMobile ? 0 : 20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.purple.withOpacity(0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Leftmost container (Date on mobile, empty on desktop)
-          _buildDateContainer(isMobile),
+          // Date container with hexagonal shape for mobile
+          _buildHexagonContainer(
+            isMobile,
+            child: Text(
+              isMobile ? _dateString : 'A',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontSize: isMobile ? 12 : 14,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.purple.withOpacity(0.6),
+          ),
 
-          // Center container (Date and time on desktop, empty on mobile)
-          if (!isMobile) _buildCenterContainer(),
+          // Center container for desktop with animated gradient
+          if (!isMobile) _buildAnimatedContainer(),
 
-          // Rightmost container (Battery and "Airox OS" on desktop, only battery on mobile)
-          _buildRightContainer(isMobile),
+          // System indicators in circular containers
+          _buildSystemIndicators(isMobile),
         ],
       ),
     );
   }
 
-  Widget _buildDateContainer(bool isMobile) {
+  Widget _buildHexagonContainer(
+    bool isMobile, {
+    required Widget child,
+    required Color backgroundColor,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Text(
-        _dateString,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          fontSize: isMobile ? 12 : 14,
-          color: Theme.of(context).colorScheme.onSurface,
+      child: child,
+    );
+  }
+
+  Widget _buildAnimatedContainer() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.blue.withOpacity(0.6),
+            Colors.deepPurple.withOpacity(0.6),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.calendar_today, size: 14, color: Colors.white),
+          const SizedBox(width: 6),
+          Text(
+            _dateString,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Icon(Icons.access_time, size: 14, color: Colors.white),
+          const SizedBox(width: 6),
+          Text(
+            _timeString,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCenterContainer() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        '$_dateString | $_timeString',
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          fontSize: 14,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRightContainer(bool isMobile) {
+  Widget _buildSystemIndicators(bool isMobile) {
     return Row(
       children: [
-        // Battery bar widget
-        _buildBatteryBar(),
-        if (!isMobile) const SizedBox(width: 8),
+        // Unique battery widget
+        _buildUniqueBatteryWidget(),
+
+        if (!isMobile) const SizedBox(width: 10),
         if (!isMobile)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(12),
+          _buildHexagonContainer(
+            false,
+            child: Row(
+              children: [
+                Icon(Icons.flight_takeoff, size: 14, color: Colors.white),
+                const SizedBox(width: 4),
+                Text(
+                  'Airox OS',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            child: Text(
-              'Airox OS',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
+            backgroundColor: Colors.teal.withOpacity(0.6),
           ),
       ],
     );
   }
 
-  Widget _buildBatteryBar() {
+  Widget _buildUniqueBatteryWidget() {
     return Container(
-      width: 40,
-      height: 12,
+      width: 50,
+      height: 20,
+      padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-          width: 1,
-        ),
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white30, width: 1),
       ),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: Container(
-          width: 30, // Example battery level (75%)
-          height: 10,
-          decoration: BoxDecoration(
-            color: Colors.greenAccent,
-            borderRadius: BorderRadius.circular(5),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 7, // 70% battery
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.greenAccent, Colors.green],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            flex: 3, // 30% empty
+            child: Container(),
+          ),
+          const SizedBox(width: 2),
+          Container(
+            width: 3,
+            height: 10,
+            decoration: BoxDecoration(
+              color: Colors.white30,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ],
       ),
     );
   }

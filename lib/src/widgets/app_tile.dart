@@ -18,97 +18,181 @@ class AppTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isLightTheme = theme.brightness == Brightness.light;
 
-    // Create a colorful background based on the app name
-    final colorSeed = label.hashCode % 5;
-    final gradient = _getGradientForIndex(colorSeed);
+    // Unique geometry for each app based on name
+    final uniqueShape = _getUniqueShapeForApp();
 
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Background glow effect
+          Container(
+            margin: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: _getBaseColorForApp().withOpacity(0.2),
+              borderRadius:
+                  uniqueShape == AppShape.circle
+                      ? null
+                      : BorderRadius.circular(
+                        uniqueShape == AppShape.hexagon ? 15 : 20,
+                      ),
+              shape:
+                  uniqueShape == AppShape.circle
+                      ? BoxShape.circle
+                      : BoxShape.rectangle,
+              boxShadow: [
+                BoxShadow(
+                  color: _getBaseColorForApp().withOpacity(0.3),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            BoxShadow(
-              color: Colors.white.withOpacity(0.1),
-              blurRadius: 5,
-              offset: const Offset(0, -2),
-            ),
-          ],
-          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 36, color: Colors.white),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+          ),
+
+          // Main app container
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: _getGradientColorsForApp(),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              textAlign: TextAlign.center,
+              borderRadius:
+                  uniqueShape == AppShape.circle
+                      ? null
+                      : BorderRadius.circular(
+                        uniqueShape == AppShape.hexagon ? 15 : 20,
+                      ),
+              shape:
+                  uniqueShape == AppShape.circle
+                      ? BoxShape.circle
+                      : BoxShape.rectangle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1.5,
+              ),
             ),
-          ],
-        ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Icon with dynamic rotation or animation effect
+                Transform.rotate(
+                  angle: uniqueShape == AppShape.hexagon ? 0.1 : 0,
+                  child: Icon(icon, size: 36, color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                // Label with custom styling
+                Text(
+                  label,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+
+          // Overlay effect
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 20,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.3),
+                    Colors.white.withOpacity(0),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius:
+                    uniqueShape != AppShape.circle
+                        ? BorderRadius.only(
+                          topLeft: Radius.circular(
+                            uniqueShape == AppShape.hexagon ? 15 : 20,
+                          ),
+                          topRight: Radius.circular(
+                            uniqueShape == AppShape.hexagon ? 15 : 20,
+                          ),
+                        )
+                        : null,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  LinearGradient _getGradientForIndex(int index) {
-    switch (index) {
+  AppShape _getUniqueShapeForApp() {
+    final hash = label.hashCode % 3;
+    switch (hash) {
       case 0:
-        return LinearGradient(
-          colors: [
-            Colors.purple.withOpacity(0.7),
-            Colors.deepPurple.withOpacity(0.7),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
+        return AppShape.rounded;
       case 1:
-        return LinearGradient(
-          colors: [
-            Colors.blue.withOpacity(0.7),
-            Colors.lightBlue.withOpacity(0.7),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
+        return AppShape.hexagon;
       case 2:
-        return LinearGradient(
-          colors: [Colors.green.withOpacity(0.7), Colors.teal.withOpacity(0.7)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
-      case 3:
-        return LinearGradient(
-          colors: [
-            Colors.orange.withOpacity(0.7),
-            Colors.amber.withOpacity(0.7),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
-      case 4:
+        return AppShape.circle;
       default:
-        return LinearGradient(
-          colors: [
-            Colors.red.withOpacity(0.7),
-            Colors.redAccent.withOpacity(0.7),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        );
+        return AppShape.rounded;
     }
   }
+
+  Color _getBaseColorForApp() {
+    final hash = label.hashCode % 6;
+    switch (hash) {
+      case 0:
+        return Colors.purple;
+      case 1:
+        return Colors.blue;
+      case 2:
+        return Colors.teal;
+      case 3:
+        return Colors.orange;
+      case 4:
+        return Colors.pink;
+      case 5:
+        return Colors.indigo;
+      default:
+        return Colors.deepPurple;
+    }
+  }
+
+  List<Color> _getGradientColorsForApp() {
+    final baseColor = _getBaseColorForApp();
+    return [
+      baseColor,
+      baseColor
+          .withBlue((baseColor.blue + 40) % 255)
+          .withRed((baseColor.red + 20) % 255),
+    ];
+  }
 }
+
+enum AppShape { rounded, hexagon, circle }

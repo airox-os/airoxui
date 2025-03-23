@@ -26,79 +26,137 @@ class Dock extends StatelessWidget {
 
   Widget _buildMobileDock(BuildContext context) {
     return Container(
-      height: 72,
+      height: 75,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.blue.withOpacity(0.6),
-            Colors.indigo.withOpacity(0.6),
+            Colors.indigo.withOpacity(0.8),
+            Colors.deepPurple.withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Colors.indigo.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, -3),
           ),
         ],
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(
-          items.length,
-          (index) => _buildMobileDockItem(context, items[index], index),
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          // Background light effects
+          Positioned(
+            top: 10,
+            child: Container(
+              width: 100,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.5),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // The main dock items
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(
+              items.length,
+              (index) => _buildFloatingDockItem(context, items[index], index),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildMobileDockItem(BuildContext context, DockItem item, int index) {
+  Widget _buildFloatingDockItem(
+    BuildContext context,
+    DockItem item,
+    int index,
+  ) {
     final isSelected = index == selectedIndex;
-    return InkWell(
-      onTap: () {
-        item.onTap?.call();
-        onItemSelected?.call(index);
-      },
-      child: Container(
-        width: 64,
-        padding: const EdgeInsets.symmetric(vertical: 8),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      transform:
+          isSelected
+              ? Matrix4.translationValues(0, -12, 0)
+              : Matrix4.translationValues(0, 0, 0),
+      child: InkWell(
+        onTap: () {
+          item.onTap?.call();
+          onItemSelected?.call(index);
+        },
+        customBorder: const CircleBorder(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
-                color:
+                gradient: LinearGradient(
+                  colors:
+                      isSelected
+                          ? [Colors.amber, Colors.orange]
+                          : [
+                            Colors.white.withOpacity(0.2),
+                            Colors.white.withOpacity(0.1),
+                          ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                boxShadow:
                     isSelected
-                        ? Colors.amber.withOpacity(0.3)
-                        : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
+                        ? [
+                          BoxShadow(
+                            color: Colors.amber.withOpacity(0.5),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                        : [],
               ),
               child: Icon(
                 isSelected ? item.selectedIcon ?? item.icon : item.icon,
-                color: isSelected ? Colors.amber : Colors.white,
-                size: 24,
+                color: isSelected ? Colors.white : Colors.white70,
+                size: 26,
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 11,
-                color:
-                    isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurface,
+            Visibility(
+              visible: isSelected,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  item.label,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -107,36 +165,63 @@ class Dock extends StatelessWidget {
   }
 
   Widget _buildDesktopDock(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.bottomCenter,
       child: Container(
-        height: 72,
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.teal.withOpacity(0.6),
-              Colors.blue.withOpacity(0.6),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.teal.withOpacity(0.3),
-              blurRadius: 15,
-              offset: const Offset(0, 6),
+        height: 80,
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            // Background glass panel
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.teal.withOpacity(0.7),
+                    Colors.blue.withOpacity(0.7),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1.5,
+                ),
+              ),
+              // Dock indicator line
+              child: Center(
+                child: Container(
+                  width: 100,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+
+            // Dock items
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(
+                items.length,
+                (index) => _buildDesktopDockItem(context, items[index]),
+              ),
             ),
           ],
-          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children:
-              items
-                  .map((item) => _buildDesktopDockItem(context, item))
-                  .toList(),
         ),
       ),
     );
@@ -144,52 +229,68 @@ class Dock extends StatelessWidget {
 
   Widget _buildDesktopDockItem(BuildContext context, DockItem item) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: MouseRegion(
-        cursor: SystemMouseCursors.click,
+        onEnter: (_) {
+          // In a real app, you'd animate the hover effect here
+        },
+        onExit: (_) {
+          // Reset the animation on exit
+        },
         child: GestureDetector(
           onTap: item.onTap,
-          child: _buildDockIcon(context, item),
+          child: _buildFuturisticDockIcon(context, item),
         ),
       ),
     );
   }
 
-  Widget _buildDockIcon(BuildContext context, DockItem item) {
+  Widget _buildFuturisticDockIcon(BuildContext context, DockItem item) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 48,
-          height: 48,
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.amber.withOpacity(0.3),
-                Colors.orange.withOpacity(0.3),
+                Colors.amber.withOpacity(0.7),
+                Colors.deepOrange.withOpacity(0.7),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
                 color: Colors.amber.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
+                blurRadius: 10,
+                spreadRadius: 1,
               ),
             ],
+            border: Border.all(
+              color: Colors.white.withOpacity(0.3),
+              width: 1.5,
+            ),
           ),
-          child: Icon(item.icon, size: 28, color: Colors.white),
+          child: Center(child: Icon(item.icon, size: 30, color: Colors.white)),
         ),
         if (item.showDot)
           Container(
-            width: 4,
-            height: 4,
-            margin: const EdgeInsets.only(top: 2),
+            width: 6,
+            height: 6,
+            margin: const EdgeInsets.only(top: 4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              color: Colors.white,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.5),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
           ),
       ],
