@@ -27,15 +27,23 @@ class AppTile extends StatelessWidget {
         decoration: BoxDecoration(
           color:
               backgroundColor ??
-              (isLightTheme ? Colors.white : theme.colorScheme.surface),
+              (isLightTheme
+                  ? Colors.white.withOpacity(0.5)
+                  : theme.colorScheme.surface.withOpacity(0.5)),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.white.withOpacity(0.1),
               blurRadius: 5,
-              offset: const Offset(0, 2),
+              offset: const Offset(0, -2),
             ),
           ],
+          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

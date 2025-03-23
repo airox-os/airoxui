@@ -12,15 +12,32 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
+  bool _isLocked = true;
+  late AnimationController _fingerprintController;
+
+  @override
+  void initState() {
+    super.initState();
+    _fingerprintController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _fingerprintController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-      // Removed the appBar property
       body: Stack(
         children: [
           // Background image
@@ -32,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          // Foreground content
+          // Home screen content
           Column(
             children: [
               const SystemStatusBar(),
@@ -45,10 +62,23 @@ class _HomeScreenState extends State<HomeScreen> {
               if (!isMobile) Dock(items: _dockItems, isMobile: false),
             ],
           ),
+          // Lock screen overlay
+          if (_isLocked)
+            Positioned.fill(
+              child: _LockScreen(
+                isMobile: isMobile,
+                fingerprintAnimation: _fingerprintController,
+                onUnlock: () {
+                  setState(() {
+                    _isLocked = false;
+                  });
+                },
+              ),
+            ),
         ],
       ),
       bottomNavigationBar:
-          isMobile
+          isMobile && !_isLocked
               ? Dock(
                 items: _dockItems,
                 isMobile: true,
@@ -285,6 +315,78 @@ class _DesktopHomeLayout extends StatelessWidget {
           ),
           // Add more app tiles here
         ],
+      ),
+    );
+  }
+}
+
+class _LockScreen extends StatelessWidget {
+  final bool isMobile;
+  final AnimationController fingerprintAnimation;
+  final VoidCallback onUnlock;
+
+  const _LockScreen({
+    required this.isMobile,
+    required this.fingerprintAnimation,
+    required this.onUnlock,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onVerticalDragEnd: (details) {
+        if (details.primaryVelocity! < -100) {
+          onUnlock();
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.black.withOpacity(0.8),
+              Colors.black.withOpacity(0.6),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          backgroundBlendMode: BlendMode.overlay,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Swipe up to unlock',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: isMobile ? 18 : 24,
+              ),
+            ),
+            const SizedBox(height: 40),
+            AnimatedBuilder(
+              animation: fingerprintAnimation,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: 1 + 0.1 * fingerprintAnimation.value,
+                  child: child,
+                );
+              },
+              child: Icon(
+                Icons.fingerprint,
+                size: isMobile ? 80 : 120,
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Airox OS',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: isMobile ? 24 : 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
