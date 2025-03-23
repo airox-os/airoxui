@@ -25,33 +25,35 @@ class Dock extends StatelessWidget {
   }
 
   Widget _buildMobileDock(BuildContext context) {
-    return Center(
-      child: Container(
-        height: 72,
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-            BoxShadow(
-              color: Colors.white.withOpacity(0.1),
-              blurRadius: 5,
-              offset: const Offset(0, -2),
-            ),
+    return Container(
+      height: 72,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.blue.withOpacity(0.6),
+            Colors.indigo.withOpacity(0.6),
           ],
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(
-            items.length,
-            (index) => _buildMobileDockItem(context, items[index], index),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
           ),
+        ],
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(
+          items.length,
+          (index) => _buildMobileDockItem(context, items[index], index),
         ),
       ),
     );
@@ -70,19 +72,26 @@ class Dock extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isSelected ? item.selectedIcon ?? item.icon : item.icon,
-              color:
-                  isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
-              size: 28,
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color:
+                    isSelected
+                        ? Colors.amber.withOpacity(0.3)
+                        : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                isSelected ? item.selectedIcon ?? item.icon : item.icon,
+                color: isSelected ? Colors.amber : Colors.white,
+                size: 24,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               item.label,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 color:
                     isSelected
                         ? Theme.of(context).colorScheme.primary
@@ -104,21 +113,23 @@ class Dock extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          gradient: LinearGradient(
+            colors: [
+              Colors.teal.withOpacity(0.6),
+              Colors.blue.withOpacity(0.6),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.teal.withOpacity(0.3),
               blurRadius: 15,
               offset: const Offset(0, 6),
             ),
-            BoxShadow(
-              color: Colors.white.withOpacity(0.1),
-              blurRadius: 5,
-              offset: const Offset(0, -2),
-            ),
           ],
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -152,21 +163,24 @@ class Dock extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+            gradient: LinearGradient(
+              colors: [
+                Colors.amber.withOpacity(0.3),
+                Colors.orange.withOpacity(0.3),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.amber.withOpacity(0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Icon(
-            item.icon,
-            size: 28,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          child: Icon(item.icon, size: 28, color: Colors.white),
         ),
         if (item.showDot)
           Container(

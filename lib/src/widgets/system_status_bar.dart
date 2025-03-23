@@ -61,7 +61,6 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
       'Dec',
     ];
 
-    // Adjust day of week (0 is Monday in days array, but DateTime.weekday has 1 as Monday)
     final dayName = days[(dateTime.weekday - 1) % 7];
     final monthName = months[dateTime.month - 1];
 
@@ -70,8 +69,10 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
@@ -81,47 +82,105 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.1),
-            blurRadius: 5,
-            offset: const Offset(0, -2),
-          ),
         ],
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left side - Menu and app indicators
-          Row(
-            children: [
-              Icon(
-                Icons.circle,
-                size: 12,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: 8),
-              Text('Airox OS', style: Theme.of(context).textTheme.labelMedium),
-            ],
-          ),
+          // Leftmost container (Date on mobile, empty on desktop)
+          _buildDateContainer(isMobile),
 
-          // Middle - Date (only for desktop)
-          if (widget.isDesktop)
-            Text(_dateString, style: Theme.of(context).textTheme.labelMedium),
+          // Center container (Date and time on desktop, empty on mobile)
+          if (!isMobile) _buildCenterContainer(),
 
-          // Right side - System indicators
-          Row(
-            children: [
-              const Icon(Icons.wifi, size: 16),
-              const SizedBox(width: 12),
-              const Icon(Icons.volume_up, size: 16),
-              const SizedBox(width: 12),
-              const Icon(Icons.battery_full, size: 16),
-              const SizedBox(width: 8),
-              Text(_timeString, style: Theme.of(context).textTheme.labelMedium),
-            ],
-          ),
+          // Rightmost container (Battery and "Airox OS" on desktop, only battery on mobile)
+          _buildRightContainer(isMobile),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDateContainer(bool isMobile) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        _dateString,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+          fontSize: isMobile ? 12 : 14,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterContainer() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        '$_dateString | $_timeString',
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+          fontSize: 14,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRightContainer(bool isMobile) {
+    return Row(
+      children: [
+        // Battery bar widget
+        _buildBatteryBar(),
+        if (!isMobile) const SizedBox(width: 8),
+        if (!isMobile)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              'Airox OS',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildBatteryBar() {
+    return Container(
+      width: 40,
+      height: 12,
+      decoration: BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          width: 1,
+        ),
+      ),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          width: 30, // Example battery level (75%)
+          height: 10,
+          decoration: BoxDecoration(
+            color: Colors.greenAccent,
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
       ),
     );
   }
