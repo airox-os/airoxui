@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/grid_delegates.dart';
+import '../widgets/recent_apps_card.dart';
+import '../widgets/search_bar.dart';
 
 class MobileHomeLayout extends StatelessWidget {
   final int selectedIndex;
@@ -13,117 +15,98 @@ class MobileHomeLayout extends StatelessWidget {
       return _buildSimpleAppsGrid(context);
     }
 
+    // Define the list of recent apps
+    final recentApps = [
+      RecentAppItem(
+        name: 'Notes',
+        icon: Icons.text_snippet,
+        color: Colors.amber,
+        onTap: () => Navigator.pushNamed(context, '/notes'),
+      ),
+      RecentAppItem(
+        name: 'Photos',
+        icon: Icons.photo,
+        color: Colors.teal,
+        onTap: () => Navigator.pushNamed(context, '/photos'),
+      ),
+      RecentAppItem(
+        name: 'Calculator',
+        icon: Icons.calculate,
+        color: Colors.orange,
+        onTap: () => Navigator.pushNamed(context, '/calculator'),
+      ),
+      RecentAppItem(
+        name: 'Terminal',
+        icon: Icons.terminal,
+        color: Colors.deepPurple,
+        onTap: () => Navigator.pushNamed(context, '/terminal'),
+      ),
+    ];
+
+    // Get screen height for proper positioning
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Calculate position for the recent apps card (above dock but with padding)
+    final dockHeight = 72.0 + 20.0; // Dock height + padding
+    final recentAppsPosition =
+        screenHeight - dockHeight - 100.0; // Position from top
+
     // Simplified home view with clock, suggestions, and scattered apps
     return Stack(
       children: [
-        // Main content column
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Simple digital clock
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 24,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.purpleAccent.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 1,
+        // Main scrollable content
+        SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Simple digital clock
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 24,
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        _getCurrentTime(),
-                        style: const TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                    decoration: BoxDecoration(
+                      color: Colors.purpleAccent.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _getCurrentDate(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Suggestions module (recently used apps)
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
+                    ),
+                    child: Column(
                       children: [
-                        Icon(Icons.history, color: Colors.white),
-                        SizedBox(width: 8),
                         Text(
-                          'Recent Apps',
-                          style: TextStyle(
-                            fontSize: 20,
+                          _getCurrentTime(),
+                          style: const TextStyle(
+                            fontSize: 40,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _getCurrentDate(),
+                          style: const TextStyle(
+                            fontSize: 16,
                             color: Colors.white,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildRecentAppItem(
-                          context,
-                          icon: Icons.text_snippet,
-                          label: 'Notes',
-                          color: Colors.amber,
-                        ),
-                        _buildRecentAppItem(
-                          context,
-                          icon: Icons.photo,
-                          label: 'Photos',
-                          color: Colors.teal,
-                        ),
-                        _buildRecentAppItem(
-                          context,
-                          icon: Icons.calculate,
-                          label: 'Calculator',
-                          color: Colors.orange,
-                        ),
-                        _buildRecentAppItem(
-                          context,
-                          icon: Icons.terminal,
-                          label: 'Terminal',
-                          color: Colors.deepPurple,
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+
+                // Search bar below the clock
+                const SizedBox(height: 20),
+                const CustomSearchBar(),
+
+                // Spacer to push content down and make room for scattered apps
+                SizedBox(height: screenHeight * 0.5),
+              ],
+            ),
           ),
         ),
 
@@ -140,9 +123,9 @@ class MobileHomeLayout extends StatelessWidget {
           ),
         ),
 
-        // Calendar App (bottom left)
+        // Calendar App (left side)
         Positioned(
-          bottom: 120,
+          top: 220,
           left: 30,
           child: _buildScatteredAppIcon(
             context,
@@ -154,7 +137,7 @@ class MobileHomeLayout extends StatelessWidget {
 
         // Camera App (center right)
         Positioned(
-          top: MediaQuery.of(context).size.height * 0.4,
+          top: 220,
           right: 40,
           child: _buildScatteredAppIcon(
             context,
@@ -164,16 +147,24 @@ class MobileHomeLayout extends StatelessWidget {
           ),
         ),
 
-        // DeepSensor App (bottom right)
+        // DeepSensor App (center left)
         Positioned(
-          bottom: 80,
-          right: 50,
+          top: 350,
+          left: 40,
           child: _buildScatteredAppIcon(
             context,
             name: 'DeepSensor',
             color: Colors.indigo.shade700,
             icon: Icons.analytics,
           ),
+        ),
+
+        // Recent apps card positioned above the dock
+        Positioned(
+          left: 0,
+          right: 0,
+          top: recentAppsPosition,
+          child: Center(child: RecentAppsCard(recentApps: recentApps)),
         ),
       ],
     );

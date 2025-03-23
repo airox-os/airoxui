@@ -117,11 +117,11 @@ class _HomeScreenState extends State<HomeScreen>
               bottom: 0,
               child: Center(
                 child: NavigationHandle(
-                  width: 120,
+                  width: 160,
                   color: Colors.white,
+                  height: 6,
                   onTap: () {
                     // Handle the navigation gesture
-                    // This could show a bottom sheet or trigger system back
                   },
                 ),
               ),
