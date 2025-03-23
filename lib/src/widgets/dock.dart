@@ -113,11 +113,7 @@ class Dock extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       transform:
           isSelected
-              ? Matrix4.translationValues(
-                0,
-                -maxTranslation,
-                0,
-              ) // Use calculated safe translation
+              ? Matrix4.translationValues(0, -maxTranslation, 0)
               : Matrix4.translationValues(0, 0, 0),
       child: InkWell(
         onTap: () {
@@ -133,17 +129,18 @@ class Dock extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors:
-                      isSelected
-                          ? [Colors.amber, Colors.orange]
-                          : [
-                            Colors.white.withOpacity(0.2),
-                            Colors.white.withOpacity(0.1),
-                          ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                gradient:
+                    isSelected
+                        ? LinearGradient(
+                          colors: [Colors.amber, Colors.orange],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                        : null, // Remove gradient for unselected state
+                color:
+                    isSelected
+                        ? null
+                        : item.backgroundColor, // Use unique background color
                 shape: BoxShape.circle,
                 boxShadow:
                     isSelected
@@ -333,6 +330,7 @@ class DockItem {
   final String label;
   final VoidCallback? onTap;
   final bool showDot;
+  final Color backgroundColor; // Add backgroundColor property
 
   const DockItem({
     required this.icon,
@@ -340,5 +338,6 @@ class DockItem {
     required this.label,
     this.onTap,
     this.showDot = false,
+    required this.backgroundColor, // Make backgroundColor required
   });
 }
