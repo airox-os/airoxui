@@ -4,6 +4,9 @@ import '../screens/settings_screen.dart';
 import '../screens/files_screen.dart';
 import '../screens/terminal_screen.dart';
 import '../screens/browser_screen.dart';
+import '../screens/editor_screen.dart';
+import '../screens/calculator_screen.dart';
+import '../screens/profile_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (context) => const HomeScreen(),
