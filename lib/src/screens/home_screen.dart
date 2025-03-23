@@ -34,16 +34,30 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          const SystemStatusBar(),
-          Expanded(
-            child: AdaptiveLayout(
-              mobile: _MobileHomeLayout(selectedIndex: _selectedIndex),
-              desktop: _DesktopHomeLayout(selectedIndex: _selectedIndex),
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              isMobile
+                  ? 'assets/desktop/mobile.png'
+                  : 'assets/desktop/desktop.png',
+              fit: BoxFit.cover,
             ),
           ),
-          if (!isMobile) Dock(items: _dockItems, isMobile: false),
+          // Foreground content
+          Column(
+            children: [
+              const SystemStatusBar(),
+              Expanded(
+                child: AdaptiveLayout(
+                  mobile: _MobileHomeLayout(selectedIndex: _selectedIndex),
+                  desktop: _DesktopHomeLayout(selectedIndex: _selectedIndex),
+                ),
+              ),
+              if (!isMobile) Dock(items: _dockItems, isMobile: false),
+            ],
+          ),
         ],
       ),
       bottomNavigationBar:
