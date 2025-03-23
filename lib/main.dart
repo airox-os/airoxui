@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'src/config/theme.dart';
 import 'src/config/routes.dart';
 
 void main() {
-  runApp(const AiroxApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Set preferred orientations
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
+  runApp(const AiroxOS());
 }
 
-class AiroxApp extends StatelessWidget {
-  const AiroxApp({super.key});
+class AiroxOS extends StatelessWidget {
+  const AiroxOS({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Airox OS',
-      theme: appTheme,
+      theme: AppThemes.lightTheme,
+      darkTheme: AppThemes.darkTheme,
+      themeMode: ThemeMode.system, // Respect system theme setting
       routes: appRoutes,
       initialRoute: '/',
       debugShowCheckedModeBanner: false,
