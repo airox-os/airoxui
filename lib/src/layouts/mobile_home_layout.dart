@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../utils/grid_delegates.dart';
 import '../widgets/recent_apps_card.dart';
 import '../widgets/search_bar.dart';
+import '../widgets/weather_card.dart'; // Add this import
 
 class MobileHomeLayout extends StatelessWidget {
   final int selectedIndex;
@@ -15,13 +16,41 @@ class MobileHomeLayout extends StatelessWidget {
       return _buildSimpleAppsGrid(context);
     }
 
-    // Define the list of recent apps
-    final recentApps = [
+    // Define the list of app icons for the left grid
+    final appIcons = [
       RecentAppItem(
         name: 'Notes',
         icon: Icons.text_snippet,
         color: Colors.amber,
         onTap: () => Navigator.pushNamed(context, '/notes'),
+      ),
+      RecentAppItem(
+        name: 'Camera',
+        icon: Icons.camera_alt,
+        color: Colors.cyan.shade700,
+        onTap: () => Navigator.pushNamed(context, '/camera'),
+      ),
+      RecentAppItem(
+        name: 'Weather',
+        icon: Icons.wb_sunny,
+        color: Colors.blue.shade700,
+        onTap: () => Navigator.pushNamed(context, '/weather'),
+      ),
+      RecentAppItem(
+        name: 'Calendar',
+        icon: Icons.calendar_today,
+        color: Colors.red.shade700,
+        onTap: () => Navigator.pushNamed(context, '/calendar'),
+      ),
+    ];
+
+    // Define the list of recent apps for the right card
+    final recentApps = [
+      RecentAppItem(
+        name: 'Terminal',
+        icon: Icons.terminal,
+        color: Colors.deepPurple,
+        onTap: () => Navigator.pushNamed(context, '/terminal'),
       ),
       RecentAppItem(
         name: 'Photos',
@@ -30,16 +59,10 @@ class MobileHomeLayout extends StatelessWidget {
         onTap: () => Navigator.pushNamed(context, '/photos'),
       ),
       RecentAppItem(
-        name: 'Calculator',
-        icon: Icons.calculate,
-        color: Colors.orange,
-        onTap: () => Navigator.pushNamed(context, '/calculator'),
-      ),
-      RecentAppItem(
-        name: 'Terminal',
-        icon: Icons.terminal,
-        color: Colors.deepPurple,
-        onTap: () => Navigator.pushNamed(context, '/terminal'),
+        name: 'Files',
+        icon: Icons.folder,
+        color: Colors.green,
+        onTap: () => Navigator.pushNamed(context, '/files'),
       ),
     ];
 
@@ -59,9 +82,6 @@ class MobileHomeLayout extends StatelessWidget {
     final navigationHandleHeight = 20.0;
     final bottomSafeZone =
         dockTotalHeight + safetyMargin + navigationHandleHeight;
-
-    // Calculate available height for app icons
-    final availableHeight = screenHeight - topSafeZone - bottomSafeZone;
 
     return Stack(
       fit: StackFit.expand,
@@ -122,59 +142,235 @@ class MobileHomeLayout extends StatelessWidget {
           ),
         ),
 
-        // App icons with precise positioning - ONLY THREE ICONS NOW (removed Calculator)
-        // Left side (Weather)
+        // Organized grid of app icons on the left side
         Positioned(
-          top: topSafeZone + 40, // Well below search bar
-          left: screenWidth * 0.25,
-          child: _buildScatteredAppIcon(
-            context,
-            name: 'Weather',
-            color: Colors.blue.shade700,
-            icon: Icons.wb_sunny,
+          top: topSafeZone + 20, // Below search bar with padding
+          left: 20, // Left margin
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title for the grid
+              Padding(
+                padding: const EdgeInsets.only(left: 8, bottom: 12),
+                child: Text(
+                  "Apps",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.5),
+                        blurRadius: 3,
+                        offset: const Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // 2x2 Grid of app icons
+              _buildAppIconGrid(context, appIcons),
+            ],
           ),
         ),
 
-        // Right side (Camera)
+        // Recent apps section on the right end
         Positioned(
-          top: topSafeZone + 40, // Well below search bar
-          right: screenWidth * 0.25,
-          child: _buildScatteredAppIcon(
-            context,
-            name: 'Camera',
-            color: Colors.cyan.shade700,
-            icon: Icons.camera_alt,
+          top: topSafeZone + 20, // Same vertical alignment as the left grid
+          right: 20, // Right margin
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Title for recent apps
+              Padding(
+                padding: const EdgeInsets.only(right: 8, bottom: 12),
+                child: Text(
+                  "Recent",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.5),
+                        blurRadius: 3,
+                        offset: const Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Vertical list of recent apps
+              _buildRecentAppsColumn(context, recentApps),
+            ],
           ),
         ),
 
-        // Center (Calendar) - positioned between the top icons and recent apps
+        // Weather card positioned at the bottom
         Positioned(
-          top:
-              topSafeZone +
-              (availableHeight * 0.5), // Center in available space
+          bottom: bottomSafeZone, // Position above the dock with some margin
           left: 0,
-          right: 0,
+          right: 128,
           child: Center(
-            child: _buildScatteredAppIcon(
-              context,
-              name: 'Calendar',
-              color: Colors.red.shade700,
-              icon: Icons.calendar_today,
+            child: WeatherCard(
+              temperature: 24.5,
+              condition: 'Cloudy',
+              location: 'Current Location',
             ),
           ),
         ),
+      ],
+    );
+  }
 
-        // Recent apps card positioned at the rightmost end of the screen
-        Positioned(
-          right: 24, // Right margin from screen edge
-          bottom: bottomSafeZone, // Same bottom position as before
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [_buildVerticalRecentAppsCard(context, recentApps)],
-          ),
+  // Build a 2x2 grid of app icons
+  Widget _buildAppIconGrid(BuildContext context, List<RecentAppItem> apps) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // First row
+        Row(
+          children: [
+            _buildGridAppIcon(context, apps[0]),
+            const SizedBox(width: 16),
+            _buildGridAppIcon(context, apps[1]),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Second row
+        Row(
+          children: [
+            _buildGridAppIcon(context, apps[2]),
+            const SizedBox(width: 16),
+            _buildGridAppIcon(context, apps[3]),
+          ],
         ),
       ],
+    );
+  }
+
+  // Build a vertical column of recent apps
+  Widget _buildRecentAppsColumn(
+    BuildContext context,
+    List<RecentAppItem> apps,
+  ) {
+    return Container(
+      width: 80, // Fixed width
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.deepPurple.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: apps.map((app) => _buildRecentAppItem(context, app)).toList(),
+      ),
+    );
+  }
+
+  Widget _buildGridAppIcon(BuildContext context, RecentAppItem app) {
+    return SizedBox(
+      width: 70, // Fixed width for consistent grid
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [app.color, app.color.withOpacity(0.7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: app.color.withOpacity(0.5),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: app.onTap,
+                borderRadius: BorderRadius.circular(15),
+                child: Icon(app.icon, color: Colors.white, size: 30),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            app.name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentAppItem(BuildContext context, RecentAppItem app) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: app.color.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: app.color.withOpacity(0.5),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: app.onTap,
+                borderRadius: BorderRadius.circular(12),
+                child: Icon(app.icon, color: Colors.white, size: 24),
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            app.name,
+            style: const TextStyle(color: Colors.white, fontSize: 10),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 
@@ -282,42 +478,6 @@ class MobileHomeLayout extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildRecentAppItem(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return InkWell(
-      onTap: () => Navigator.pushNamed(context, '/${label.toLowerCase()}'),
-      child: Column(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.5),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Icon(icon, color: Colors.white, size: 26),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ],
-      ),
     );
   }
 
