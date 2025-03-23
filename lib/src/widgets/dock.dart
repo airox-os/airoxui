@@ -25,23 +25,33 @@ class Dock extends StatelessWidget {
   }
 
   Widget _buildMobileDock(BuildContext context) {
-    return Container(
-      height: 72,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+    return Center(
+      child: Container(
+        height: 72,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.white.withOpacity(0.1),
+              blurRadius: 5,
+              offset: const Offset(0, -2),
+            ),
+          ],
+          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(
+            items.length,
+            (index) => _buildMobileDockItem(context, items[index], index),
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(
-          items.length,
-          (index) => _buildMobileDockItem(context, items[index], index),
         ),
       ),
     );
@@ -90,9 +100,9 @@ class Dock extends StatelessWidget {
   Widget _buildDesktopDock(BuildContext context) {
     return Center(
       child: Container(
-        height: 66,
+        height: 72,
         margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
           borderRadius: BorderRadius.circular(16),
@@ -111,7 +121,7 @@ class Dock extends StatelessWidget {
           border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children:
               items
                   .map((item) => _buildDesktopDockItem(context, item))
