@@ -259,88 +259,46 @@ class _DesktopHomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Desktop sidebar navigation
-        NavigationRail(
-          extended: MediaQuery.of(context).size.width > 1000,
-          destinations: const [
-            NavigationRailDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: Text('Home'),
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.apps_outlined),
-              selectedIcon: Icon(Icons.apps),
-              label: Text('Applications'),
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.folder_outlined),
-              selectedIcon: Icon(Icons.folder),
-              label: Text('Files'),
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.terminal),
-              label: Text('Terminal'),
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings),
-              label: Text('Settings'),
-            ),
-          ],
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (index) {
-            // This would be handled in a stateful widget
-          },
-        ),
-
-        // Main content area
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: GridView.count(
-              crossAxisCount: 6,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
-              children: [
-                AppTile(
-                  icon: Icons.web,
-                  label: 'Browser',
-                  onTap: () => Navigator.pushNamed(context, '/browser'),
-                ),
-                AppTile(
-                  icon: Icons.text_snippet,
-                  label: 'Editor',
-                  onTap: () => Navigator.pushNamed(context, '/editor'),
-                ),
-                AppTile(
-                  icon: Icons.terminal,
-                  label: 'Terminal',
-                  onTap: () => Navigator.pushNamed(context, '/terminal'),
-                ),
-                AppTile(
-                  icon: Icons.folder,
-                  label: 'Files',
-                  onTap: () => Navigator.pushNamed(context, '/files'),
-                ),
-                AppTile(
-                  icon: Icons.calculate,
-                  label: 'Calculator',
-                  onTap: () => Navigator.pushNamed(context, '/calculator'),
-                ),
-                AppTile(
-                  icon: Icons.settings,
-                  label: 'Settings',
-                  onTap: () => Navigator.pushNamed(context, '/settings'),
-                ),
-                // Add more app tiles here
-              ],
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: GridView.count(
+        crossAxisCount: 6,
+        mainAxisSpacing: 20,
+        crossAxisSpacing: 20,
+        children: [
+          AppTile(
+            icon: Icons.web,
+            label: 'Browser',
+            onTap: () => Navigator.pushNamed(context, '/browser'),
           ),
-        ),
-      ],
+          AppTile(
+            icon: Icons.text_snippet,
+            label: 'Editor',
+            onTap: () => Navigator.pushNamed(context, '/editor'),
+          ),
+          AppTile(
+            icon: Icons.terminal,
+            label: 'Terminal',
+            onTap: () => Navigator.pushNamed(context, '/terminal'),
+          ),
+          AppTile(
+            icon: Icons.folder,
+            label: 'Files',
+            onTap: () => Navigator.pushNamed(context, '/files'),
+          ),
+          AppTile(
+            icon: Icons.calculate,
+            label: 'Calculator',
+            onTap: () => Navigator.pushNamed(context, '/calculator'),
+          ),
+          AppTile(
+            icon: Icons.settings,
+            label: 'Settings',
+            onTap: () => Navigator.pushNamed(context, '/settings'),
+          ),
+          // Add more app tiles here
+        ],
+      ),
     );
   }
 }
