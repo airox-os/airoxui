@@ -43,25 +43,40 @@ class MobileHomeLayout extends StatelessWidget {
       ),
     ];
 
-    // Get screen height for proper positioning
+    // Get screen dimensions for proper positioning
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    // Calculate position for the recent apps card (above dock but with padding)
-    final dockHeight = 72.0 + 20.0; // Dock height + padding
-    final recentAppsPosition =
-        screenHeight - dockHeight - 100.0; // Position from top
+    // Calculate heights for various UI sections
+    final clockHeight = 130.0; // Clock widget height
+    final searchBarHeight = 60.0; // Search bar height with margins
+    final topSafeZone =
+        clockHeight + searchBarHeight + 30.0; // Additional padding
 
-    // Simplified home view with clock, suggestions, and scattered apps
+    // Calculate bottom safe zone
+    final dockTotalHeight = 72.0 + 2.0 + 20.0;
+    final safetyMargin = 24.0;
+    final navigationHandleHeight = 20.0;
+    final bottomSafeZone =
+        dockTotalHeight + safetyMargin + navigationHandleHeight;
+
+    // Calculate available height for app icons
+    final availableHeight = screenHeight - topSafeZone - bottomSafeZone;
+
     return Stack(
+      fit: StackFit.expand,
       children: [
-        // Main scrollable content
-        SingleChildScrollView(
+        // Main content with clock and search bar
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Simple digital clock
+                // Clock widget
                 Center(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -99,22 +114,19 @@ class MobileHomeLayout extends StatelessWidget {
                   ),
                 ),
 
-                // Search bar below the clock
+                // Search bar below the clock with clear spacing
                 const SizedBox(height: 20),
                 const CustomSearchBar(),
-
-                // Spacer to push content down and make room for scattered apps
-                SizedBox(height: screenHeight * 0.5),
               ],
             ),
           ),
         ),
 
-        // Scattered apps
-        // Weather App (top right)
+        // App icons with precise positioning - ONLY THREE ICONS NOW (removed Calculator)
+        // Left side (Weather)
         Positioned(
-          top: 100,
-          right: 30,
+          top: topSafeZone + 40, // Well below search bar
+          left: screenWidth * 0.25,
           child: _buildScatteredAppIcon(
             context,
             name: 'Weather',
@@ -123,22 +135,10 @@ class MobileHomeLayout extends StatelessWidget {
           ),
         ),
 
-        // Calendar App (left side)
+        // Right side (Camera)
         Positioned(
-          top: 220,
-          left: 30,
-          child: _buildScatteredAppIcon(
-            context,
-            name: 'Calendar',
-            color: Colors.red.shade700,
-            icon: Icons.calendar_today,
-          ),
-        ),
-
-        // Camera App (center right)
-        Positioned(
-          top: 220,
-          right: 40,
+          top: topSafeZone + 40, // Well below search bar
+          right: screenWidth * 0.25,
           child: _buildScatteredAppIcon(
             context,
             name: 'Camera',
@@ -147,24 +147,32 @@ class MobileHomeLayout extends StatelessWidget {
           ),
         ),
 
-        // DeepSensor App (center left)
+        // Center (Calendar) - positioned between the top icons and recent apps
         Positioned(
-          top: 350,
-          left: 40,
-          child: _buildScatteredAppIcon(
-            context,
-            name: 'DeepSensor',
-            color: Colors.indigo.shade700,
-            icon: Icons.analytics,
+          top:
+              topSafeZone +
+              (availableHeight * 0.5), // Center in available space
+          left: 0,
+          right: 0,
+          child: Center(
+            child: _buildScatteredAppIcon(
+              context,
+              name: 'Calendar',
+              color: Colors.red.shade700,
+              icon: Icons.calendar_today,
+            ),
           ),
         ),
 
-        // Recent apps card positioned above the dock
+        // Recent apps card positioned at the rightmost end of the screen
         Positioned(
-          left: 0,
-          right: 0,
-          top: recentAppsPosition,
-          child: Center(child: RecentAppsCard(recentApps: recentApps)),
+          right: 24, // Right margin from screen edge
+          bottom: bottomSafeZone, // Same bottom position as before
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [_buildVerticalRecentAppsCard(context, recentApps)],
+          ),
         ),
       ],
     );
@@ -319,8 +327,10 @@ class MobileHomeLayout extends StatelessWidget {
     required Color color,
     required IconData icon,
   }) {
-    return InkWell(
-      onTap: () => Navigator.pushNamed(context, '/${name.toLowerCase()}'),
+    // Fixed size container to prevent overflow
+    return SizedBox(
+      width: 70, // Slightly wider to accommodate the label
+      height: 90, // Taller to allow for icon + text + padding
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -348,19 +358,107 @@ class MobileHomeLayout extends StatelessWidget {
             ),
             child: Icon(icon, color: Colors.white, size: 30),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(
+            height: 6,
+          ), // Slightly more spacing between icon and label
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            width: 70, // Ensure the label container has fixed width
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               name,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
+              style: const TextStyle(color: Colors.white, fontSize: 10),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildVerticalRecentAppsCard(
+    BuildContext context,
+    List<RecentAppItem> recentApps,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Title above the card
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8, right: 8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              "Recent Apps",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+
+        // Vertical card with app icons
+        Container(
+          width: 70, // Narrow width for vertical layout
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          decoration: BoxDecoration(
+            color: Colors.deepPurple.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children:
+                recentApps
+                    .map((app) => _buildVerticalAppIcon(context, app))
+                    .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerticalAppIcon(BuildContext context, RecentAppItem app) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: InkWell(
+        onTap: app.onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: app.color.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: app.color.withOpacity(0.5),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Icon(app.icon, color: Colors.white, size: 24),
+        ),
       ),
     );
   }

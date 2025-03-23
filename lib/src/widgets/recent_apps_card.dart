@@ -11,10 +11,11 @@ class RecentAppsCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // The card containing app icons
+        // The card containing app icons with proper padding
         Container(
           width: MediaQuery.of(context).size.width * 0.5, // Half screen width
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          padding: const EdgeInsets.all(16), // Increased padding
+          margin: const EdgeInsets.all(8), // Added margin around the card
           decoration: BoxDecoration(
             color: Colors.deepPurple.withOpacity(0.4),
             borderRadius: BorderRadius.circular(16),
@@ -34,9 +35,9 @@ class RecentAppsCard extends StatelessWidget {
           ),
         ),
 
-        // Title below the card
+        // Title below the card with more spacing
         const Padding(
-          padding: EdgeInsets.only(top: 8),
+          padding: EdgeInsets.only(top: 12), // Increased padding
           child: Text(
             "Recent Apps",
             style: TextStyle(
@@ -51,29 +52,34 @@ class RecentAppsCard extends StatelessWidget {
   }
 
   Widget _buildAppIcon(BuildContext context, RecentAppItem app) {
-    return InkWell(
-      onTap: app.onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: app.color.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: app.color.withOpacity(0.5),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+      ), // Added padding between icons
+      child: InkWell(
+        onTap: app.onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: app.color.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: app.color.withOpacity(0.5),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(app.icon, color: Colors.white, size: 24),
             ),
-            child: Icon(app.icon, color: Colors.white, size: 24),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
