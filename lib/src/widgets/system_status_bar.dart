@@ -74,32 +74,17 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.deepPurple.withOpacity(0.4),
-            Colors.cyan.withOpacity(0.4),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Colors.transparent, // Make the status bar itself transparent
         borderRadius: BorderRadius.circular(isMobile ? 0 : 20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.purple.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Date container with hexagonal shape for mobile
+          // Time container for mobile or date for desktop
           _buildHexagonContainer(
             isMobile,
             child: Text(
-              isMobile ? _dateString : 'A',
+              isMobile ? _timeString : _dateString, // Show time for mobile
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontSize: isMobile ? 12 : 14,
                 color: Colors.white,
@@ -193,34 +178,66 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
   Widget _buildSystemIndicators(bool isMobile) {
     return Row(
       children: [
+        // Add network and Wi-Fi icons for mobile
+        if (isMobile) ...[
+          _buildIconWithBackground(
+            icon: Icons.network_cell,
+            backgroundColor: Colors.blueGrey.withOpacity(0.5),
+          ),
+          const SizedBox(width: 8),
+          _buildIconWithBackground(
+            icon: Icons.wifi,
+            backgroundColor: Colors.blue.withOpacity(0.5),
+          ),
+        ],
+
+        // Add Wi-Fi and speaker icons for desktop
+        if (!isMobile) ...[
+          _buildIconWithBackground(
+            icon: Icons.wifi,
+            backgroundColor: Colors.blue.withOpacity(0.5),
+          ),
+          const SizedBox(width: 8),
+          _buildIconWithBackground(
+            icon: Icons.volume_up,
+            backgroundColor: Colors.green.withOpacity(0.5),
+          ),
+        ],
+
+        const SizedBox(width: 8),
+
         // Unique battery widget
         _buildUniqueBatteryWidget(),
-
-        if (!isMobile) const SizedBox(width: 10),
-        if (!isMobile)
-          _buildHexagonContainer(
-            false,
-            child: Row(
-              children: [
-                Icon(Icons.flight_takeoff, size: 14, color: Colors.white),
-                const SizedBox(width: 4),
-                Text(
-                  'Airox OS',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.teal.withOpacity(0.6),
-          ),
       ],
     );
   }
 
+  Widget _buildIconWithBackground({
+    required IconData icon,
+    required Color backgroundColor,
+  }) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Icon(icon, size: 16, color: Colors.white),
+    );
+  }
+
   Widget _buildUniqueBatteryWidget() {
+    final bool isCharging =
+        true; // This could be dynamic based on actual charging state
+
     return Container(
       width: 50,
       height: 20,
@@ -230,34 +247,44 @@ class _SystemStatusBarState extends State<SystemStatusBar> {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white30, width: 1),
       ),
-      child: Row(
+      child: Stack(
         children: [
-          Expanded(
-            flex: 7, // 70% battery
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.greenAccent, Colors.green],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+          Row(
+            children: [
+              Expanded(
+                flex: 7, // 70% battery
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.greenAccent, Colors.green],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(6),
               ),
+              Expanded(
+                flex: 3, // 30% empty
+                child: Container(),
+              ),
+              const SizedBox(width: 2),
+              Container(
+                width: 3,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.white30,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ],
+          ),
+
+          // Charging zap indicator
+          if (isCharging)
+            Center(
+              child: Icon(Icons.bolt, color: Colors.yellow.shade300, size: 14),
             ),
-          ),
-          Expanded(
-            flex: 3, // 30% empty
-            child: Container(),
-          ),
-          const SizedBox(width: 2),
-          Container(
-            width: 3,
-            height: 10,
-            decoration: BoxDecoration(
-              color: Colors.white30,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
         ],
       ),
     );

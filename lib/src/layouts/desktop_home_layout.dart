@@ -13,11 +13,46 @@ class DesktopHomeLayout extends StatelessWidget {
         // Central interactive element
         Center(child: _buildImmersiveClockWidget(context)),
 
-        // Radial app launcher
+        // Desktop folder icons scattered around
+        Positioned(
+          left: 50,
+          top: 80,
+          child: _buildDesktopFolder(
+            title: 'Documents',
+            icon: Icons.folder,
+            color: Colors.deepPurple.shade300,
+          ),
+        ),
+
+        Positioned(
+          left: 50,
+          top: 180,
+          child: _buildDesktopFolder(
+            title: 'Media',
+            icon: Icons.folder_special,
+            color: Colors.purple.shade400,
+          ),
+        ),
+
+        Positioned(
+          left: 50,
+          top: 280,
+          child: _buildDesktopFolder(
+            title: 'Downloads',
+            icon: Icons.download,
+            color: Colors.purpleAccent.shade200,
+          ),
+        ),
+
         Positioned(
           right: 50,
-          bottom: 100,
-          child: _buildRadialAppLauncher(context),
+          top: 80,
+          child: _buildDesktopFolder(
+            title: 'Trash',
+            icon: Icons.delete,
+            color: Colors.deepPurple.shade400,
+            isTrash: true, // Special case for trash folder
+          ),
         ),
       ],
     );
@@ -128,36 +163,66 @@ class DesktopHomeLayout extends StatelessWidget {
     );
   }
 
-  Widget _buildRadialAppLauncher(BuildContext context) {
-    final apps = [
-      {'icon': Icons.web, 'name': 'Browser'},
-      {'icon': Icons.text_snippet, 'name': 'Editor'},
-      {'icon': Icons.terminal, 'name': 'Terminal'},
-      {'icon': Icons.folder, 'name': 'Files'},
-      {'icon': Icons.calculate, 'name': 'Calculator'},
-      {'icon': Icons.settings, 'name': 'Settings'},
-    ];
+  Widget _buildDesktopFolder({
+    required String title,
+    required IconData icon,
+    required Color color,
+    bool isTrash = false,
+  }) {
+    return InkWell(
+      onTap: () {
+        // Handle folder tap
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              // Folder background
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Icon(icon, color: Colors.white, size: 30),
+              ),
 
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.deepPurple.withOpacity(0.7),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.deepPurple.withOpacity(0.3),
-            blurRadius: 10,
-            spreadRadius: 1,
+              // Trash overlay (50% opaque trash icon)
+              if (isTrash)
+                Icon(
+                  Icons.delete,
+                  size: 24,
+                  color: Colors.white.withOpacity(0.5),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              title,
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
           ),
         ],
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.apps, color: Colors.white),
-        onPressed: () {
-          // In a real app, this would trigger the radial menu to appear
-          // For this example, we're just showing what it would look like
-        },
       ),
     );
   }

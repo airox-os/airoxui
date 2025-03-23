@@ -13,133 +13,169 @@ class MobileHomeLayout extends StatelessWidget {
       return _buildSimpleAppsGrid(context);
     }
 
-    // Simplified home view with just the clock, creative module, and 3 app icons
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Simple digital clock
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              decoration: BoxDecoration(
-                color: Colors.purpleAccent.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    _getCurrentTime(),
-                    style: const TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _getCurrentDate(),
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Creative module (simplified)
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Icon(Icons.brush, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text(
-                      'Creative',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildSimpleAppButton(
-                      context,
-                      icon: Icons.text_snippet,
-                      label: 'Editor',
-                    ),
-                    _buildSimpleAppButton(
-                      context,
-                      icon: Icons.photo,
-                      label: 'Photos',
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Just 3 simple app icons (no fancy effects)
-          const Padding(
-            padding: EdgeInsets.only(left: 8, bottom: 16),
-            child: Text(
-              'Featured Apps',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    // Simplified home view with clock, suggestions, and scattered apps
+    return Stack(
+      children: [
+        // Main content column
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildAppIcon(
-                context,
-                name: 'Photos',
-                color: Colors.teal,
-                icon: Icons.camera,
+              // Simple digital clock
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 24,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.purpleAccent.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        _getCurrentTime(),
+                        style: const TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _getCurrentDate(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              _buildAppIcon(
-                context,
-                name: 'Vexeroo',
-                color: Colors.deepOrange,
-                icon: Icons.auto_awesome,
-              ),
-              _buildAppIcon(
-                context,
-                name: 'DeepSensor',
-                color: Colors.indigo,
-                icon: Icons.analytics,
+
+              const SizedBox(height: 24),
+
+              // Suggestions module (recently used apps)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.history, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          'Recent Apps',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildRecentAppItem(
+                          context,
+                          icon: Icons.text_snippet,
+                          label: 'Notes',
+                          color: Colors.amber,
+                        ),
+                        _buildRecentAppItem(
+                          context,
+                          icon: Icons.photo,
+                          label: 'Photos',
+                          color: Colors.teal,
+                        ),
+                        _buildRecentAppItem(
+                          context,
+                          icon: Icons.calculate,
+                          label: 'Calculator',
+                          color: Colors.orange,
+                        ),
+                        _buildRecentAppItem(
+                          context,
+                          icon: Icons.terminal,
+                          label: 'Terminal',
+                          color: Colors.deepPurple,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-        ],
-      ),
+        ),
+
+        // Scattered apps
+        // Weather App (top right)
+        Positioned(
+          top: 100,
+          right: 30,
+          child: _buildScatteredAppIcon(
+            context,
+            name: 'Weather',
+            color: Colors.blue.shade700,
+            icon: Icons.wb_sunny,
+          ),
+        ),
+
+        // Calendar App (bottom left)
+        Positioned(
+          bottom: 120,
+          left: 30,
+          child: _buildScatteredAppIcon(
+            context,
+            name: 'Calendar',
+            color: Colors.red.shade700,
+            icon: Icons.calendar_today,
+          ),
+        ),
+
+        // Camera App (center right)
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.4,
+          right: 40,
+          child: _buildScatteredAppIcon(
+            context,
+            name: 'Camera',
+            color: Colors.cyan.shade700,
+            icon: Icons.camera_alt,
+          ),
+        ),
+
+        // DeepSensor App (bottom right)
+        Positioned(
+          bottom: 80,
+          right: 50,
+          child: _buildScatteredAppIcon(
+            context,
+            name: 'DeepSensor',
+            color: Colors.indigo.shade700,
+            icon: Icons.analytics,
+          ),
+        ),
+      ],
     );
   }
 
@@ -247,6 +283,94 @@ class MobileHomeLayout extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildRecentAppItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context, '/${label.toLowerCase()}'),
+      child: Column(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.5),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScatteredAppIcon(
+    BuildContext context, {
+    required String name,
+    required Color color,
+    required IconData icon,
+  }) {
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context, '/${name.toLowerCase()}'),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color, color.withOpacity(0.7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.5),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Icon(icon, color: Colors.white, size: 30),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              name,
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
