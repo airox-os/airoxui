@@ -58,6 +58,13 @@ class _WeatherCardState extends State<WeatherCard>
             spreadRadius: 4,
             offset: const Offset(0, 8),
           ),
+          // Secondary shadow
+          BoxShadow(
+            color: Colors.blue.shade900.withOpacity(0.3),
+            blurRadius: 12,
+            spreadRadius: 1,
+            offset: const Offset(0, 5),
+          ),
           // Inner light reflection
           BoxShadow(
             color: Colors.blue.shade200.withOpacity(0.4),
@@ -65,12 +72,12 @@ class _WeatherCardState extends State<WeatherCard>
             spreadRadius: -3,
             offset: const Offset(0, -4),
           ),
-          // Bottom edge highlight
+          // Top edge highlight
           BoxShadow(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withOpacity(0.2),
             blurRadius: 2,
             spreadRadius: 0,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, -1),
           ),
         ],
         border: Border.all(color: Colors.white.withOpacity(0.6), width: 2.0),
@@ -87,7 +94,7 @@ class _WeatherCardState extends State<WeatherCard>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Location with shadow
+                // Location with enhanced shadow
                 Text(
                   widget.location,
                   style: TextStyle(
@@ -99,6 +106,11 @@ class _WeatherCardState extends State<WeatherCard>
                         color: Colors.black.withOpacity(0.5),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
+                      ),
+                      Shadow(
+                        color: Colors.blue.shade900.withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -159,7 +171,7 @@ class _WeatherCardState extends State<WeatherCard>
 
                 const SizedBox(height: 12),
 
-                // Condition text with shadow
+                // Condition text with enhanced shadow
                 Text(
                   widget.condition,
                   style: TextStyle(
@@ -171,6 +183,11 @@ class _WeatherCardState extends State<WeatherCard>
                         color: Colors.black.withOpacity(0.5),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
+                      ),
+                      Shadow(
+                        color: Colors.blue.shade900.withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -229,24 +246,37 @@ class _WeatherCardState extends State<WeatherCard>
       width: size,
       height: size * 0.6,
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, Colors.white.withOpacity(0.9)],
+        ),
         borderRadius: BorderRadius.circular(size),
         boxShadow: [
-          // Enhanced 3D shadow
+          // Bottom shadow for depth
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
             blurRadius: 8,
             spreadRadius: 1,
             offset: const Offset(0, 3),
           ),
-          // Top highlight
+          // Top highlight for 3D effect
           BoxShadow(
             color: Colors.white.withOpacity(0.8),
             blurRadius: 4,
             spreadRadius: 0,
             offset: const Offset(0, -1),
           ),
+          // Subtle inner shadow
+          BoxShadow(
+            color: Colors.blue.shade200.withOpacity(0.1),
+            blurRadius: 4,
+            spreadRadius: -2,
+            offset: const Offset(0, 2),
+          ),
         ],
+        // Subtle border
+        border: Border.all(color: Colors.white.withOpacity(0.5), width: 0.5),
       ),
     );
   }
@@ -255,7 +285,14 @@ class _WeatherCardState extends State<WeatherCard>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.25),
+            Colors.white.withOpacity(0.1),
+          ],
+        ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           // Outside shadow
@@ -271,6 +308,13 @@ class _WeatherCardState extends State<WeatherCard>
             blurRadius: 3,
             spreadRadius: 0,
             offset: const Offset(0, -1),
+          ),
+          // Deeper shadow
+          BoxShadow(
+            color: Colors.blue.shade900.withOpacity(0.2),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
           ),
         ],
         // Subtle border
@@ -289,6 +333,11 @@ class _WeatherCardState extends State<WeatherCard>
                 blurRadius: 4,
                 offset: const Offset(1, 1),
               ),
+              Shadow(
+                color: Colors.blue.shade900.withOpacity(0.3),
+                blurRadius: 6,
+                offset: const Offset(1, 2),
+              ),
             ],
           ),
           const SizedBox(width: 4),
@@ -303,6 +352,11 @@ class _WeatherCardState extends State<WeatherCard>
                   color: Colors.black.withOpacity(0.5),
                   blurRadius: 3,
                   offset: const Offset(0, 1),
+                ),
+                Shadow(
+                  color: Colors.blue.shade900.withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -355,6 +409,13 @@ class _WeatherCardState extends State<WeatherCard>
             blurRadius: 10,
             spreadRadius: 1,
             offset: const Offset(0, 4),
+          ),
+          // Secondary shadow
+          BoxShadow(
+            color: Colors.blue.shade900.withOpacity(0.2),
+            blurRadius: 8,
+            spreadRadius: 0,
+            offset: const Offset(0, 6),
           ),
           // Inner glow
           BoxShadow(
