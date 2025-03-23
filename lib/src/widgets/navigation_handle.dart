@@ -9,9 +9,9 @@ class NavigationHandle extends StatelessWidget {
 
   const NavigationHandle({
     super.key,
-    this.width = 100,
+    this.width = 160, // Increased width from 120 to 160
     this.color = Colors.white,
-    this.height = 4,
+    this.height = 6, // Increased height from 5 to 6
     this.onTap,
   });
 
@@ -22,21 +22,32 @@ class NavigationHandle extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
-        margin: const EdgeInsets.only(bottom: 8),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.5),
+          color: Colors.black.withOpacity(0.2),
           borderRadius: BorderRadius.circular(height / 2),
-          // Add a subtle border/outline to make it visible against any background
-          border: Border.all(color: Colors.white.withOpacity(0.8), width: 0.5),
-          // Add a subtle shadow for additional visibility
+          border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 2,
-              spreadRadius: 0.5,
+              color: Colors.white.withOpacity(0.3),
+              blurRadius: 4,
+              spreadRadius: 1,
+              offset: const Offset(0, 0),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 3,
+              spreadRadius: 0,
               offset: const Offset(0, 1),
             ),
           ],
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.7),
+            borderRadius: BorderRadius.circular((height - 2) / 2),
+          ),
         ),
       ),
     );
